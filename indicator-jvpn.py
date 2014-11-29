@@ -145,8 +145,8 @@ class SysTray:
     
   def menuitem_response(self, w, item):
     if item == '_quit':
-      os.kill(self.pid, signal.SIGTERM)
-      self.pid = 0
+      if self.pid > 0:
+        os.kill(self.pid, signal.SIGTERM)        
       sys.exit(0)
     elif item == '_connect':
       if self.dialog == None:
