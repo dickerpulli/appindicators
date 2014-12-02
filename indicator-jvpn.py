@@ -137,7 +137,6 @@ class SysTray:
     text = entry.get_text().decode('utf8')
     text2 = entry2.get_text().decode('utf8')
     self.dialog.destroy()
-    self.dialog = None
     if r == gtk.RESPONSE_OK and text != '' and text2 != '':
       return [text, text2]
     else:
@@ -151,6 +150,7 @@ class SysTray:
     elif item == '_connect':
       if self.dialog == None:
         pwd = self.get_user_pw(None, 'Bitte geben Sie Ihre VPN Passwoerter ein')
+        self.dialog = None
         if pwd:
           home = os.environ['HOME']
           os.chdir(home + "/.juniper_networks/jvpn")
@@ -170,6 +170,18 @@ class SysTray:
       f = open('/tmp/jvpn.state','r')
       menu_item_state.set_label(f.readline().strip())
       indicator.set_icon("nm-signal-100-secure")
+    elif os.path.exists('/tmp/jvpn.state') and self.pid == 0:
+      # disconnecting
+      menu_item_connect.set_sensitive(False)
+      menu_item_disconnect.set_sensitive(False)
+      menu_item_state.set_label('disconnecting...')
+      indicator.set_icon("nm-signal-0")
+    elif not(os.path.exists('/tmp/jvpn.state')) and self.pid != 0:
+      # connecting
+      menu_item_connect.set_sensitive(False)
+      menu_item_disconnect.set_sensitive(False)
+      menu_item_state.set_label('connecting...')
+      indicator.set_icon("nm-signal-0")
     else:
       menu_item_connect.set_sensitive(True)
       menu_item_disconnect.set_sensitive(False)
