@@ -155,11 +155,10 @@ class SysTray:
           home = os.environ['HOME']
           os.chdir(home + "/.juniper_networks/jvpn")
           self.pid = os.spawnl(os.P_NOWAIT, 'jvpn.pl', 'jvpn.pl', pwd[0], pwd[1])
-          pidWaiter = PidWaiter(self.pid)
+          pidWaiter = PidWaiter(self)
           pidWaiter.start()
     elif item == '_disconnect':
       os.kill(self.pid, signal.SIGTERM)
-      self.pid = 0
     else:
       print item
 
@@ -190,12 +189,13 @@ class SysTray:
     return True
 
 class PidWaiter(threading.Thread):
-  def __init__(self, pid):
+  def __init__(self, sysTray):
     threading.Thread.__init__(self)
-    self.pid = pid
+    self.sysTray = sysTray
 
   def run(self):
-    os.wait4(self.pid, os.WUNTRACED)
+    os.wait4(self.sysTray.pid, os.WUNTRACED)
+    self.sysTray.pid = 0
 
 if __name__ == "__main__":
   sysTray = SysTray()
