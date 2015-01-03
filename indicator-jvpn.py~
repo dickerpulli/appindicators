@@ -130,7 +130,7 @@ class SysTray:
     table.show()
 
     self.dialog.vbox.add(table)
-    self.dialog.set_keep_above(True)
+
     self.dialog.set_default_response(gtk.RESPONSE_OK)
   
     r = self.dialog.run()
